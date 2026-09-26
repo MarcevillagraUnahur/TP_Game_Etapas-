@@ -1,0 +1,90 @@
+import wollok.game.*
+import personajes.*
+import heroes.*
+import villanos.*
+import elementosDelJuego.*
+
+program defensores {
+  game.title("Defensores del Glaciar - Etapa 4: Puzles, HUD y Niveles")
+  game.width(15)
+  game.height(15)
+  game.cellSize(50)
+
+  // 1. Añadir Fondo inicial (Menú)
+  game.addVisual(fondo)
+
+  // 2. Instanciar Héroe
+  const heroe = new Heroe(nombre = "Tupac", position = game.at(0, 2))
+  game.addVisual(heroe)
+
+  // 3. Movimiento del Héroe (Flechas y WASD)
+  keyboard.up().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverArriba() })
+  keyboard.w().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverArriba() })
+
+  keyboard.down().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverAbajo() })
+  keyboard.s().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverAbajo() })
+
+  keyboard.left().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverIzquierda() })
+  keyboard.a().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverIzquierda() })
+
+  keyboard.right().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverDerecha() })
+  keyboard.d().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverDerecha() })
+
+  // 4. Disparar Papas (Espacio)
+  keyboard.space().onPressDo({
+    if (gestorDeNiveles.estaJugando()) gestorDeNiveles.lanzarPapaHeroe(heroe)
+  })
+
+  // 5. Iniciar Partida / Interactuar con Puzle (ENTER)
+  keyboard.enter().onPressDo({
+    if (gestorDeNiveles.estaEnMenu()) {
+      gestorDeNiveles.configurarNivel1(heroe)
+
+      // Montar HUD en la franja superior (y=14)
+      game.addVisual(new CorazonHUD(position = game.at(0, 14), indice = 1, personaje = heroe))
+      game.addVisual(new CorazonHUD(position = game.at(1, 14), indice = 2, personaje = heroe))
+      game.addVisual(new CorazonHUD(position = game.at(2, 14), indice = 3, personaje = heroe))
+      game.addVisual(new BarraEnergiaHUD(position = game.at(4, 14), personaje = heroe))
+      game.addVisual(new NivelHUD(position = game.at(13, 14), personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(8, 14), indice = 0, personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(9, 14), indice = 1, personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(10, 14), indice = 2, personaje = heroe))
+    } else if (gestorDeNiveles.estaJugando()) {
+      const cofre = gestorDeNiveles.cofreActual()
+      const poste = gestorDeNiveles.posteActual()
+      const llave = gestorDeNiveles.llaveActual()
+
+      // Abrir Cofre y conseguir Llave
+      if (cofre != null && (heroe.position().x() - cofre.position().x()).abs() <= 1 && (heroe.position().y() - cofre.position().y()).abs() <= 1 && !cofre.estaAbierto()) {
+        cofre.abrir()
+        if (!game.hasVisual(llave)) game.addVisual(llave)
+        heroe.tieneLlave(true)
+        game.say(heroe, "Tengo la llave!")
+      } else {
+        if (poste != null && (heroe.position().x() - poste.position().x()).abs() <= 1 && (heroe.position().y() - poste.position().y()).abs() <= 1) {
+          if (heroe.tieneLlave()) {
+            game.say(heroe, "Detuvimos la destruccion!")
+            game.schedule(2000, {
+              if (heroe.nivelActual().esNivel1()) {
+                gestorDeNiveles.pasarANivel2(heroe)
+              } else {
+                gestorDeNiveles.ganarJuego(heroe)
+              }
+            })
+          } else {
+            game.say(heroe, "Necesito la llave!")
+          }
+        }
+      }
+    }
+  })
+
+  // 6. Colisiones
+  game.onCollideDo(heroe, { elemento =>
+    if (elemento == gestorDeNiveles.villanoActual()) {
+      elemento.atacar(heroe)
+    }
+  })
+
+  game.start()
+}
