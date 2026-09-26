@@ -1,0 +1,56 @@
+﻿import wollok.game.*
+import personajes.*
+import heroes.*
+import villanos.*
+import elementosDelJuego.*
+
+program defensores {
+  game.title("Defensores del Glaciar - Etapa 3: Integracion Grafica")
+  game.width(15)
+  game.height(15)
+  game.cellSize(50)
+
+  // 1. Añadir Fondo inicial (Menú)
+  game.addVisual(fondo)
+
+  // 2. Instanciar Héroe
+  const heroe = new Heroe(nombre = "Tupac", position = game.at(0, 2))
+  game.addVisual(heroe)
+
+  // 3. Movimiento del Héroe (Flechas y WASD)
+  keyboard.up().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverArriba() })
+  keyboard.w().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverArriba() })
+
+  keyboard.down().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverAbajo() })
+  keyboard.s().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverAbajo() })
+
+  keyboard.left().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverIzquierda() })
+  keyboard.a().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverIzquierda() })
+
+  keyboard.right().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverDerecha() })
+  keyboard.d().onPressDo({ if (gestorDeNiveles.estaJugando()) heroe.moverDerecha() })
+
+  // 4. Disparar Papas (Espacio y J)
+  keyboard.space().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.lanzarPapa()
+  })
+  keyboard.j().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.lanzarPapa()
+  })
+
+  // 5. Iniciar Partida desde Menú (ENTER)
+  keyboard.enter().onPressDo({
+    if (gestorDeNiveles.estaEnMenu()) {
+      gestorDeNiveles.configurarNivel1(heroe)
+    }
+  })
+
+  // 6. Colisiones automáticas de Wollok Game
+  game.onCollideDo(heroe, { elemento =>
+    if (elemento == gestorDeNiveles.villanoActual()) {
+      elemento.atacar(heroe)
+    }
+  })
+
+  game.start()
+}
