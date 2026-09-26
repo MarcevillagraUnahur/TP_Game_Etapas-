@@ -1,0 +1,56 @@
+import personajes.*
+import heroes.*
+import villanos.*
+import elementosDelJuego.*
+import obstaculos.*
+import motor2d.actor.*
+import motor2d.engine.*
+
+describe "Tests de Motor 2D y Dominio: Etapa 5" {
+
+  test "Deteccion de Colisiones AABB entre Actores" {
+    const actor1 = new Actor(x = 10, y = 10, width = 5, height = 5)
+    const actor2 = new Actor(x = 12, y = 12, width = 5, height = 5)
+    const actor3 = new Actor(x = 30, y = 30, width = 5, height = 5)
+
+    assert.that(actor1.colisionaCon(actor2))
+    assert.notThat(actor1.colisionaCon(actor3))
+  }
+
+  test "Obstaculo AABB calcula correctamente su area de ocupacion" {
+    const camion = new Obstaculo(x = 15, y = 10, anchoCeldas = 3, altoCeldas = 3)
+    
+    assert.equals(15, camion.width())
+    assert.equals(15, camion.height())
+    assert.that(camion.ocupaPosicion(15, 10))
+    assert.notThat(camion.ocupaPosicion(50, 50))
+  }
+
+  test "Movimiento fluido por impulsos (ticks) del Heroe" {
+    const heroe = new Heroe(x = 0, y = 10)
+    heroe.moverDerecha()
+    
+    // Ejecuta 1 tick del motor
+    heroe.actualizar()
+    assert.equals(1, heroe.x())
+  }
+
+  test "El proyectil Papa colisiona con el villano y lo transforma en animal" {
+    const heroe = new Heroe(x = 0, y = 10)
+    const villano = new Villano(x = 10, y = 10, nombre = "demoledor")
+    const papa = new Papa(x = 10, y = 10, direccion = este, personaje = heroe)
+
+    assert.notThat(villano.estaTransformado())
+    papa.colisionoCon(villano)
+    assert.that(villano.estaTransformado())
+  }
+
+  test "El gestor de niveles conmuta a Nivel 2 y resetea estado" {
+    const heroe = new Heroe()
+    gestorDeNiveles.pasarANivel2(heroe)
+
+    assert.that(heroe.nivelActual().esNivel2())
+    assert.equals("Pachita", heroe.nombre())
+    assert.notThat(heroe.tieneLlave())
+  }
+}

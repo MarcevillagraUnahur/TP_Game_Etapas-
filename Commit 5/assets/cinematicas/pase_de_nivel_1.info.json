@@ -1,0 +1,13 @@
+{
+  "videoOriginal": "Prueba de videos\\Pase de nivel 1.mp4",
+  "videoMtime": 1786984642658.461,
+  "videoSize": 2575636,
+  "prefijo": "pase_de_nivel_1_",
+  "totalFrames": 80,
+  "fps": 8,
+  "intervaloMs": 125,
+  "ancho": 750,
+  "alto": 750,
+  "rutaAudio": "cinematicas/pase_de_nivel_1_audio.mp3",
+  "fechaGeneracion": "2026-09-26T13:59:53.047Z"
+}

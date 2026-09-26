@@ -1,0 +1,26 @@
+import actor.*
+
+describe "Tests de Actor y Colisiones AABB en Motor2D" {
+  test "Dos actores superpuestos colisionan" {
+    const actor1 = new Actor(x = 10, y = 10, width = 5, height = 5)
+    const actor2 = new Actor(x = 12, y = 12, width = 5, height = 5)
+    assert.that(actor1.colisionaCon(actor2))
+  }
+
+  test "Dos actores separados no colisionan" {
+    const actor1 = new Actor(x = 10, y = 10, width = 5, height = 5)
+    const actor2 = new Actor(x = 30, y = 30, width = 5, height = 5)
+    assert.notThat(actor1.colisionaCon(actor2))
+  }
+
+  test "Un actor no colisiona consigo mismo" {
+    const actor1 = new Actor(x = 10, y = 10, width = 5, height = 5)
+    assert.notThat(actor1.colisionaCon(actor1))
+  }
+
+  test "Desplazar modifica coordenadas y posición" {
+    const actor1 = new Actor(x = 10, y = 20)
+    actor1.desplazar(5, -5)
+    assert.equals(15, actor1.x())
+  }
+}
