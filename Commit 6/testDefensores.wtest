@@ -1,0 +1,58 @@
+import heroes.*
+import villanos.*
+import obstaculos.*
+import elementosDelJuego.*
+import motor2d.engine.*
+import personajes.*
+
+describe "Tests de Integracion: Defensores del Glaciar a 40 FPS" {
+
+  test "El heroe inicia avance suave al norte con velocidad constante" {
+    const heroe = new Heroe(x = 25, y = 25)
+    heroe.moverArriba()
+    assert.equals(norte, heroe.direccion())
+    heroe.actualizar()
+    assert.equals(26, heroe.y())
+  }
+
+  test "El heroe no puede atravesar un camion obstaculo" {
+    const heroe = new Heroe(x = 10, y = 10)
+    const camion = new Obstaculo(x = 15, y = 10, anchoCeldas = 3, altoCeldas = 3)
+    nivel1.obstaculosDelNivel().add(camion)
+    
+    heroe.moverDerecha()
+    // Intenta avanzar 5 ticks
+    (1..5).forEach({ _ => heroe.actualizar() })
+    assert.that(heroe.x() < 15) // Bloqueado antes de entrar al camión
+    
+    nivel1.obstaculosDelNivel().remove(camion)
+  }
+
+  test "El proyectil Papa avanza fluidamente y colisiona con el villano" {
+    const heroe = new Heroe(x = 0, y = 0)
+    const villano = new Villano(x = 25, y = 25, nombre = "demoledor", nivel = nivel1)
+    const papa = new Papa(x = 25, y = 23, direccion = norte, personaje = heroe)
+    
+    papa.actualizar() // Avanza a y = 25
+    assert.that(papa.colisionaCon(villano))
+    villano.recibirImpacto(papa)
+    
+    assert.that(villano.estaTransformado())
+    assert.that(["condor", "lagarto", "llama", "mula"].contains(villano.animal()))
+    assert.equals(10, heroe.puntos())
+  }
+
+  test "El cofre se abre correctamente" {
+    const cofre = new Cofre(x = 0, y = 55)
+    assert.notThat(cofre.estaAbierto())
+    cofre.abrir()
+    assert.that(cofre.estaAbierto())
+  }
+
+  test "El nivel 2 tiene configuracion correcta y se identifica como nivel 2" {
+    assert.that(nivel2.esNivel2())
+    assert.notThat(nivel2.esNivel1())
+    assert.that(nivel1.esNivel1())
+    assert.notThat(nivel1.esNivel2())
+  }
+}

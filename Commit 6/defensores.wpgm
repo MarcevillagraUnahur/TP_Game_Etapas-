@@ -1,0 +1,157 @@
+import wollok.game.*
+import motor2d.config.*
+import motor2d.engine.*
+import heroes.*
+import elementosDelJuego.*
+import obstaculos.*
+import villanos.*
+import cinematica.cinematica.*
+
+program defensores {
+  // Grilla modular: 75x75 sub-celdas de 10px = 750x750 px totales (40 FPS)
+  configuracionMotor.configurar(75, 75, 10, 25)
+  configuracionMotor.inicializarPantalla("Defensores del Glaciar - Fluid 40 FPS")
+
+  // Fondo cubre todo el tablero desde y=0
+  engine.spawn(fondo)
+
+  const heroe = new Heroe()
+
+  // --- Movimiento Suave a 40 FPS (Flechas y WASD) ---
+  keyboard.up().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverArriba()
+  })
+  keyboard.w().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverArriba()
+  })
+
+  keyboard.down().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverAbajo()
+  })
+  keyboard.s().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverAbajo()
+  })
+
+  keyboard.left().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverIzquierda()
+  })
+  keyboard.a().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverIzquierda()
+  })
+
+  keyboard.right().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverDerecha()
+  })
+  keyboard.d().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.moverDerecha()
+  })
+
+  // --- Disparo de Papas Benditas (Espacio y J) ---
+  keyboard.space().onPressDo({
+    if (reproductorCinematica.estaActiva()) {
+      reproductorCinematica.finalizar()
+    } else if (reproductorCinematicaNivel2.estaActiva()) {
+      reproductorCinematicaNivel2.finalizar()
+    } else if (gestorDeNiveles.estaEnMenu()) {
+      gestorDeNiveles.configurarNivel1(heroe)
+      game.addVisual(new CorazonHUD(position = game.at(0, 70), indice = 1, personaje = heroe))
+      game.addVisual(new CorazonHUD(position = game.at(5, 70), indice = 2, personaje = heroe))
+      game.addVisual(new CorazonHUD(position = game.at(10, 70), indice = 3, personaje = heroe))
+      game.addVisual(new BarraEnergiaHUD(position = game.at(20, 70), personaje = heroe))
+      game.addVisual(new NivelHUD(position = game.at(65, 70), personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(40, 70), indice = 0, personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(45, 70), indice = 1, personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(50, 70), indice = 2, personaje = heroe))
+    } else if (gestorDeNiveles.estaJugando()) {
+      heroe.lanzarPapa()
+    }
+  })
+  keyboard.j().onPressDo({
+    if (gestorDeNiveles.estaJugando()) heroe.lanzarPapa()
+  })
+
+  // --- Iniciar Partida / Interactuar con Puzles (ENTER) ---
+  keyboard.enter().onPressDo({
+    if (reproductorCinematica.estaActiva()) {
+      reproductorCinematica.finalizar()
+    } else if (reproductorCinematicaNivel2.estaActiva()) {
+      reproductorCinematicaNivel2.finalizar()
+    } else if (gestorDeNiveles.estaEnMenu()) {
+      gestorDeNiveles.configurarNivel1(heroe)
+
+      // HUD en la franja superior (y=70)
+      game.addVisual(new CorazonHUD(position = game.at(0, 70), indice = 1, personaje = heroe))
+      game.addVisual(new CorazonHUD(position = game.at(5, 70), indice = 2, personaje = heroe))
+      game.addVisual(new CorazonHUD(position = game.at(10, 70), indice = 3, personaje = heroe))
+      game.addVisual(new BarraEnergiaHUD(position = game.at(20, 70), personaje = heroe))
+      game.addVisual(new NivelHUD(position = game.at(65, 70), personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(40, 70), indice = 0, personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(45, 70), indice = 1, personaje = heroe))
+      game.addVisual(new DigitoPuntajeHUD(position = game.at(50, 70), indice = 2, personaje = heroe))
+    } else if (gestorDeNiveles.estaJugando()) {
+      const cofre = gestorDeNiveles.cofreActual()
+      const poste = gestorDeNiveles.posteActual()
+      const llave = gestorDeNiveles.llaveActual()
+      
+      if ((heroe.x() - cofre.x()).abs() <= 5 && (heroe.y() - cofre.y()).abs() <= 5 && !cofre.estaAbierto()) {
+        cofre.abrir()
+        engine.spawn(llave)
+        heroe.tieneLlave(true)
+        game.say(heroe, "Tengo la llave!")
+        game.onTick(3000, "borrarMensajeLlave", {
+          game.say(heroe, "")
+          game.removeTickEvent("borrarMensajeLlave")
+        })
+      } else if ((heroe.x() - poste.x()).abs() <= 5 && (heroe.y() - poste.y()).abs() <= 5) {
+        if (heroe.tieneLlave()) {
+          gestorDeNiveles.detenerMovimientoVillano()
+          
+          const objetosQueCaen = gestorDeNiveles.obtenerObjetosQueCaen(heroe)
+          
+          game.onTick(25, "caidaObjetos", {
+            objetosQueCaen.forEach({ obj =>
+              if (game.hasVisual(obj)) {
+                obj.desplazar(0, -1)
+                if (obj.y() < -15) {
+                  engine.despawn(obj)
+                }
+              }
+            })
+            
+            if (objetosQueCaen.all({ obj => !game.hasVisual(obj) })) {
+              game.removeTickEvent("caidaObjetos")
+              game.say(heroe, "Detuvimos la destruccion!")
+              game.onTick(3000, "borrarMensajeFin", {
+                game.say(heroe, "")
+                game.removeTickEvent("borrarMensajeFin")
+                
+                if (heroe.nivelActual().esNivel1()) {
+                  gestorDeNiveles.limpiarNivel()
+                  if (game.hasVisual(heroe)) game.removeVisual(heroe)
+                  reproductorCinematica.reproducir({
+                    gestorDeNiveles.pasarANivel2(heroe)
+                  })
+                } else if (heroe.nivelActual().esNivel2()) {
+                  gestorDeNiveles.limpiarNivel()
+                  if (game.hasVisual(heroe)) game.removeVisual(heroe)
+                  reproductorCinematicaNivel2.reproducir({
+                    gestorDeNiveles.ganarJuego(heroe)
+                  })
+                }
+              })
+            }
+          })
+        } else {
+          game.say(heroe, "Necesito la llave!")
+          game.onTick(3000, "borrarMensajeError", {
+            game.say(heroe, "")
+            game.removeTickEvent("borrarMensajeError")
+          })
+        }
+      }
+    }
+  })
+
+  engine.iniciar()
+  game.start()
+}
