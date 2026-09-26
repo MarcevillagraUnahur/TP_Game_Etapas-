@@ -1,0 +1,50 @@
+﻿import personajes.*
+import heroes.*
+import villanos.*
+import elementosDelJuego.*
+
+describe "Tests Unitarios: Modelo de Dominio Inicial" {
+
+  test "El heroe inicia con 100 de energia y 3 vidas" {
+    const tupac = new Heroe(nombre = "Tupac")
+    assert.equals(100, tupac.energia())
+    assert.equals(3, tupac.vidas())
+    assert.that(tupac.estaVivo())
+  }
+
+  test "El heroe recibe daño y disminuye su energia" {
+    const tupac = new Heroe(nombre = "Tupac")
+    tupac.recibirDano(30)
+    assert.equals(70, tupac.energia())
+    assert.equals(3, tupac.vidas())
+  }
+
+  test "Al perder toda la energia pierde 1 vida y se recupera la energia" {
+    const tupac = new Heroe(nombre = "Tupac")
+    tupac.recibirDano(100)
+    assert.equals(2, tupac.vidas())
+    assert.equals(100, tupac.energia())
+  }
+
+  test "El villano ataca al heroe con su poder de ataque" {
+    const tupac = new Heroe(nombre = "Tupac")
+    const demoledor = new Villano(nombre = "Demoledor", poderAtaque = 25)
+    demoledor.atacar(tupac)
+    assert.equals(75, tupac.energia())
+  }
+
+  test "El heroe puede sumar puntos y agarrar la llave" {
+    const tupac = new Heroe(nombre = "Tupac")
+    tupac.ganarPuntos(50)
+    tupac.agarrarLlave()
+    assert.equals(50, tupac.puntos())
+    assert.that(tupac.tieneLlave())
+  }
+
+  test "El cofre se abre correctamente" {
+    const cofre = new Cofre()
+    assert.notThat(cofre.estaAbierto())
+    cofre.abrir()
+    assert.that(cofre.estaAbierto())
+  }
+}
