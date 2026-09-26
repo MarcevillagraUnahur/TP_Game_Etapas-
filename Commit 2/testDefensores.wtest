@@ -1,0 +1,78 @@
+﻿import personajes.*
+import heroes.*
+import villanos.*
+import elementosDelJuego.*
+
+describe "Tests de Dominio: Mecanicas de Combate, Proyectiles y Niveles" {
+
+  test "El heroe lanza un proyectil Papa y se registra en sus papas activas" {
+    const heroe = new Heroe(nombre = "Tupac", x = 5, y = 5, direccion = norte)
+    const papa = heroe.lanzarPapa()
+    
+    assert.equals(1, heroe.papasActivas().size())
+    assert.equals(5, papa.x())
+    assert.equals(5, papa.y())
+    assert.equals(norte, papa.direccion())
+  }
+
+  test "El proyectil Papa avanza y colisiona con el villano" {
+    const heroe = new Heroe(nombre = "Tupac", x = 2, y = 2, direccion = norte)
+    const villano = new Villano(nombre = "demoledor", x = 2, y = 3, nivel = nivel1)
+    const papa = heroe.lanzarPapa()
+    
+    papa.avanzar() // Avanza a y=3
+    assert.that(papa.colisionaCon(villano))
+    
+    villano.recibirImpacto(papa)
+    assert.that(villano.estaTransformado())
+    assert.that(["condor", "lagarto", "llama", "mula"].contains(villano.animal()))
+    assert.equals(10, heroe.puntos())
+    assert.equals(0, heroe.papasActivas().size()) // Se destruyó tras el impacto
+  }
+
+  test "El villano patrulla siguiendo su camino configurado" {
+    const villano = new Villano(
+      nombre = "demoledor",
+      x = 0,
+      y = 0,
+      camino = [este, este, norte]
+    )
+    villano.avanzarPaso() // este -> (1, 0)
+    assert.equals(1, villano.x())
+    assert.equals(0, villano.y())
+    
+    villano.avanzarPaso() // este -> (2, 0)
+    assert.equals(2, villano.x())
+    assert.equals(0, villano.y())
+    
+    villano.avanzarPaso() // norte -> (2, 1)
+    assert.equals(2, villano.x())
+    assert.equals(1, villano.y())
+  }
+
+  test "Los niveles otorgan diferente puntaje segun el villano derrotado" {
+    const heroe1 = new Heroe(nombre = "Tupac", nivelActual = nivel1)
+    const villano1 = new Villano(nombre = "demoledor", nivel = nivel1)
+    const papa1 = new Papa(personaje = heroe1)
+    villano1.recibirImpacto(papa1)
+    assert.equals(10, heroe1.puntos())
+
+    const heroe2 = new Heroe(nombre = "Pachita", nivelActual = nivel2)
+    const villano2 = new Villano(nombre = "envenenador", nivel = nivel2)
+    const papa2 = new Papa(personaje = heroe2)
+    villano2.recibirImpacto(papa2)
+    assert.equals(15, heroe2.puntos())
+  }
+
+  test "El cofre se abre correctamente y se obtiene la llave" {
+    const cofre = new Cofre(x = 1, y = 5)
+    const heroe = new Heroe(nombre = "Tupac")
+    
+    assert.notThat(cofre.estaAbierto())
+    cofre.abrir()
+    assert.that(cofre.estaAbierto())
+    
+    heroe.agarrarLlave()
+    assert.that(heroe.tieneLlave())
+  }
+}
