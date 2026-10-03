@@ -22,5 +22,5 @@
 ## Otros
 
 - PROGRAMACION CON OBJETOS I COMISION 6 - UNAHUR
-- Versión de wollok: 0.2.2
+- Versión de wollok: Wollok-Lang v4.0.0
 - Una vez terminado, no tenemos problemas en que el repositorio sea público
