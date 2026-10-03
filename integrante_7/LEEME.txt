@@ -1,0 +1,19 @@
+=== PASOS PARA EL INTEGRANTE 7 ===
+
+1. En tu PC, abre la consola en la carpeta de tu repositorio (tp-final-wollok-game-tercerafila).
+2. Trae los cambios que subió el Integrante 6 ejecutando:
+
+   git pull
+
+3. Copia todos los archivos de esta carpeta ('defensores.wpgm', 'elementosDelJuego.wlk', 'heroes.wlk', 'obstaculos.wlk', 'personajes.wlk', 'villanos.wlk', 'testDefensores.wtest') y pégalos en tu repositorio reemplazando los existentes.
+4. Corre los tests para verificar que pasen los 6 tests:
+
+   wollok test
+
+5. Ejecuta:
+
+   git add .
+   git commit -m "feat: implementar jerarquia de niveles, transicion al nivel 2 y tests"
+   git push
+
+6. ¡Listo! El repositorio grupal ya tiene la entrega completa con los 7 commits individuales de cada integrante.

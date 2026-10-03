@@ -1,0 +1,38 @@
+﻿import wollok.game.*
+import personajes.*
+import heroes.*
+import obstaculos.*
+
+program defensores {
+  game.title("Defensores del Glaciar")
+  game.width(15)
+  game.height(15)
+  game.cellSize(50)
+  game.boardGround("fondo1.png")
+
+  const heroe = new Heroe()
+
+  const camion1 = new Obstaculo(position = game.at(3, 2), imagen = "Camion1.png", anchoCeldas = 3, altoCeldas = 3)
+  const camion2 = new Obstaculo(position = game.at(9, 7), imagen = "Camion2.png", anchoCeldas = 3, altoCeldas = 3)
+
+  game.addVisual(camion1)
+  game.addVisual(camion2)
+  heroe.obstaculos().add(camion1)
+  heroe.obstaculos().add(camion2)
+
+  game.addVisual(heroe)
+
+  keyboard.up().onPressDo({ heroe.moverseHacia(norte) })
+  keyboard.w().onPressDo({ heroe.moverseHacia(norte) })
+
+  keyboard.down().onPressDo({ heroe.moverseHacia(sur) })
+  keyboard.s().onPressDo({ heroe.moverseHacia(sur) })
+
+  keyboard.left().onPressDo({ heroe.moverseHacia(oeste) })
+  keyboard.a().onPressDo({ heroe.moverseHacia(oeste) })
+
+  keyboard.right().onPressDo({ heroe.moverseHacia(este) })
+  keyboard.d().onPressDo({ heroe.moverseHacia(este) })
+
+  game.start()
+}

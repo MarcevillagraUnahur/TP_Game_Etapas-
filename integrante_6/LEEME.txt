@@ -1,0 +1,15 @@
+=== PASOS PARA EL INTEGRANTE 6 ===
+
+1. En tu PC, abre la consola en la carpeta de tu repositorio (tp-final-wollok-game-tercerafila).
+2. Trae los cambios que subió el Integrante 5 ejecutando:
+
+   git pull
+
+3. Copia los archivos de esta carpeta ('elementosDelJuego.wlk', 'heroes.wlk', 'defensores.wpgm') y pégalos en tu repositorio.
+4. Ejecuta:
+
+   git add .
+   git commit -m "feat: incorporar HUD de vidas y puntaje con mecanica de cofre y llave"
+   git push
+
+5. Avisa al Integrante 7 para que continúe.

@@ -1,0 +1,15 @@
+=== PASOS PARA EL INTEGRANTE 4 ===
+
+1. En tu PC, abre la consola en la carpeta de tu repositorio (tp-final-wollok-game-tercerafila).
+2. Trae los cambios que subió el Integrante 3 ejecutando:
+
+   git pull
+
+3. Copia los archivos de esta carpeta ('personajes.wlk', 'villanos.wlk', 'defensores.wpgm') y pégalos en tu repositorio.
+4. Ejecuta:
+
+   git add .
+   git commit -m "feat: incorporar clase Villano con linea de vision y patrullaje"
+   git push
+
+5. Avisa al Integrante 5 para que continúe.

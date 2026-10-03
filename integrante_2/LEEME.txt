@@ -1,0 +1,15 @@
+=== PASOS PARA EL INTEGRANTE 2 ===
+
+1. En tu PC, abre la consola en la carpeta de tu repositorio (tp-final-wollok-game-tercerafila).
+2. Trae los cambios que subió el Integrante 1 ejecutando:
+
+   git pull
+
+3. Copia los archivos de esta carpeta ('personajes.wlk', 'heroes.wlk', 'defensores.wpgm') y pégalos en tu repositorio (reemplazando los existentes).
+4. Ejecuta:
+
+   git add .
+   git commit -m "refactor: modelar clase Personaje y clase Heroe con estados de vida"
+   git push
+
+5. Avisa al Integrante 3 para que continúe.

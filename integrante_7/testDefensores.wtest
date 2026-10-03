@@ -1,0 +1,67 @@
+import wollok.game.*
+import heroes.*
+import villanos.*
+import obstaculos.*
+import elementosDelJuego.*
+import personajes.*
+
+describe "Tests de Integracion: Defensores del Glaciar" {
+
+  method initialize() {
+    game.width(15)
+    game.height(15)
+  }
+
+  test "El heroe inicia avance al norte" {
+    const heroe = new Heroe(position = game.at(5, 5))
+    heroe.moverseHacia(norte)
+    assert.equals(norte, heroe.direccion())
+    assert.equals(game.at(5, 6), heroe.position())
+  }
+
+  test "El heroe pierde vidas directamente al recibir daño" {
+    const heroe = new Heroe(position = game.at(5, 5))
+    assert.equals(3, heroe.vidas())
+    heroe.recibirDano(10)
+    assert.equals(2, heroe.vidas())
+    heroe.recibirDano(10)
+    assert.equals(1, heroe.vidas())
+  }
+
+  test "El heroe no puede atravesar un camion obstaculo" {
+    const camion = new Obstaculo(position = game.at(5, 5), anchoCeldas = 3, altoCeldas = 3)
+    nivel1.obstaculosDelNivel().add(camion)
+    
+    const heroe = new Heroe(position = game.at(4, 5))
+    heroe.moverseHacia(este)
+    assert.equals(game.at(4, 5), heroe.position())
+    
+    nivel1.obstaculosDelNivel().remove(camion)
+  }
+
+  test "El proyectil Papa impacta en el villano y lo transforma en animal" {
+    const heroe = new Heroe(position = game.at(5, 5))
+    const villano = new Villano(position = game.at(5, 7), nombre = "demoledor", nivel = nivel1)
+    const papa = new Papa(position = game.at(5, 6), direccion = norte, nivel = nivel1, id = 1, personaje = heroe)
+    
+    villano.recibirImpacto(papa)
+    
+    assert.that(villano.estaTransformado())
+    assert.that(["condor", "lagarto", "llama", "mula"].contains(villano.animal()))
+    assert.equals(10, heroe.puntos())
+  }
+
+  test "El cofre se abre correctamente" {
+    const cofre = new Cofre(position = game.at(0, 11))
+    assert.notThat(cofre.estaAbierto())
+    cofre.abrir()
+    assert.that(cofre.estaAbierto())
+  }
+
+  test "El nivel 2 tiene configuracion correcta y se identifica como nivel 2" {
+    assert.that(nivel2.esNivel2())
+    assert.notThat(nivel2.esNivel1())
+    assert.that(nivel1.esNivel1())
+    assert.notThat(nivel1.esNivel2())
+  }
+}

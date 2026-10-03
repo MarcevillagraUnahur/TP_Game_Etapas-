@@ -1,0 +1,95 @@
+import wollok.game.*
+import personajes.*
+import heroes.*
+import obstaculos.*
+import villanos.*
+import elementosDelJuego.*
+
+program defensores {
+  game.title("Defensores del Glaciar")
+  game.width(15)
+  game.height(15)
+  game.cellSize(50)
+  game.boardGround("fondo1.png")
+
+  const heroe = new Heroe()
+
+  game.addVisual(new CorazonHUD(position = game.at(0, 14), indice = 1, personaje = heroe))
+  game.addVisual(new CorazonHUD(position = game.at(1, 14), indice = 2, personaje = heroe))
+  game.addVisual(new CorazonHUD(position = game.at(2, 14), indice = 3, personaje = heroe))
+
+  game.addVisual(new DigitoPuntajeHUD(position = game.at(8, 14), indice = 0, personaje = heroe))
+  game.addVisual(new DigitoPuntajeHUD(position = game.at(9, 14), indice = 1, personaje = heroe))
+  game.addVisual(new DigitoPuntajeHUD(position = game.at(10, 14), indice = 2, personaje = heroe))
+
+  const camion1 = new Obstaculo(position = game.at(3, 2), imagen = "Camion1.png", anchoCeldas = 3, altoCeldas = 3)
+  const camion2 = new Obstaculo(position = game.at(9, 7), imagen = "Camion2.png", anchoCeldas = 3, altoCeldas = 3)
+
+  game.addVisual(camion1)
+  game.addVisual(camion2)
+  heroe.obstaculos().add(camion1)
+  heroe.obstaculos().add(camion2)
+
+  const cofre = new Cofre(position = game.at(0, 11))
+  const poste = new PosteConCaja(position = game.at(14, 11))
+  const llave = new Llave(position = game.at(12, 14))
+
+  game.addVisual(cofre)
+  game.addVisual(poste)
+
+  const villano = new Villano(
+    position = game.at(7, 3),
+    nombre = "demoledor",
+    direccion = este,
+    camino = [este, este, este, este, norte, norte, norte, norte, oeste, oeste, oeste, oeste, sur, sur, sur, sur]
+  )
+  villano.obstaculos().add(camion1)
+  villano.obstaculos().add(camion2)
+  game.addVisual(villano)
+
+  game.addVisual(heroe)
+
+  keyboard.up().onPressDo({ heroe.moverseHacia(norte) })
+  keyboard.w().onPressDo({ heroe.moverseHacia(norte) })
+  keyboard.down().onPressDo({ heroe.moverseHacia(sur) })
+  keyboard.s().onPressDo({ heroe.moverseHacia(sur) })
+  keyboard.left().onPressDo({ heroe.moverseHacia(oeste) })
+  keyboard.a().onPressDo({ heroe.moverseHacia(oeste) })
+  keyboard.right().onPressDo({ heroe.moverseHacia(este) })
+  keyboard.d().onPressDo({ heroe.moverseHacia(este) })
+
+  keyboard.space().onPressDo({ heroe.lanzarPapa() })
+  keyboard.j().onPressDo({ heroe.lanzarPapa() })
+
+  keyboard.enter().onPressDo({
+    if (heroe.position() == cofre.position() && !cofre.estaAbierto()) {
+      cofre.abrir()
+      if (!game.hasVisual(llave)) game.addVisual(llave)
+      heroe.tieneLlave(true)
+      game.say(heroe, "Tengo la llave!")
+      game.onTick(3000, "borrarMensajeLlave", {
+        game.say(heroe, "")
+        game.removeTickEvent("borrarMensajeLlave")
+      })
+    } else if (heroe.position() == poste.position()) {
+      if (heroe.tieneLlave()) {
+        game.say(heroe, "Detuvimos la destruccion!")
+      } else {
+        game.say(heroe, "Necesito la llave!")
+        game.onTick(3000, "borrarMensajeError", {
+          game.say(heroe, "")
+          game.removeTickEvent("borrarMensajeError")
+        })
+      }
+    }
+  })
+
+  game.onTick(400, "movimientoVillano", {
+    villano.moverse(heroe)
+    if (villano.estaAdjacenteA(heroe)) {
+      villano.atacar(heroe)
+    }
+  })
+
+  game.start()
+}
