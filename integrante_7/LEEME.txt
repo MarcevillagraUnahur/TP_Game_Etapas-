@@ -13,7 +13,7 @@
 5. Ejecuta:
 
    git add .
-   git commit -m "feat: implementar jerarquia de niveles, transicion al nivel 2 y tests"
+   git commit -m "Implementar jerarquia de niveles, transicion al nivel 2 y tests"
    git push
 
 6. ¡Listo! El repositorio grupal ya tiene la entrega completa con los 7 commits individuales de cada integrante.
