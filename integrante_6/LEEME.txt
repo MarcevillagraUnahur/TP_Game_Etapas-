@@ -9,7 +9,7 @@
 4. Ejecuta:
 
    git add .
-   git commit -m "feat: incorporar HUD de vidas y puntaje con mecanica de cofre y llave"
+   git commit -m "Incorporar HUD de vidas y puntaje con mecanica de cofre y llave"
    git push
 
 5. Avisa al Integrante 7 para que continúe.
