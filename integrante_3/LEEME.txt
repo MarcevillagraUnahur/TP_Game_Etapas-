@@ -9,7 +9,7 @@
 4. Ejecuta:
 
    git add .
-   git commit -m "feat: implementar obstaculos y validacion de limites espaciales"
+   git commit -m "Implementar obstaculos y validacion de limites espaciales"
    git push
 
 5. Avisa al Integrante 4 para que continúe.
